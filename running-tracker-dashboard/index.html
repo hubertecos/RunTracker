@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunTracker Pro 🏃‍♂️</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav__container">
+            <div class="nav__brand">
+                <span class="nav__logo">🏃‍♂️</span>
+                <span class="nav__title">RunTracker Pro</span>
+            </div>
+            <div class="nav__links">
+                <button class="nav__link nav__link--active" data-section="dashboard">Dashboard</button>
+                <button class="nav__link" data-section="add-run">Add Run</button>
+                <button class="nav__link" data-section="progress">Progress</button>
+                <button class="nav__link" data-section="goals">Goals</button>
+                <button class="nav__link" data-section="achievements">Achievements</button>
+                <button class="nav__link" data-section="advice">Advice</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section section--active">
+            <div class="container">
+                <div class="section__header">
+                    <h1>Welcome back, Runner! 🎉</h1>
+                    <p>Here's your running overview for this week</p>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-card--primary">
+                        <div class="stat-card__icon">🏃‍♂️</div>
+                        <div class="stat-card__content">
+                            <h3 id="current-streak">0</h3>
+                            <p>Current Streak</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--success">
+                        <div class="stat-card__icon">📏</div>
+                        <div class="stat-card__content">
+                            <h3 id="week-distance">0.0 mi</h3>
+                            <p>This Week</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--warning">
+                        <div class="stat-card__icon">⚡</div>
+                        <div class="stat-card__content">
+                            <h3 id="avg-pace">--:--</h3>
+                            <p>Avg Pace</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--info">
+                        <div class="stat-card__icon">🔥</div>
+                        <div class="stat-card__content">
+                            <h3 id="total-runs">0</h3>
+                            <p>Total Runs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Runs and Progress -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Recent Runs</h3>
+                            <div id="recent-runs-list" class="recent-runs">
+                                <!-- Recent runs will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Weekly Progress</h3>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div id="weekly-progress" class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span id="progress-current">0</span> / <span id="progress-goal">25</span> miles
+                                </div>
+                            </div>
+                            <canvas id="weekly-chart" class="chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Latest Achievement -->
+                <div id="latest-achievement" class="achievement-showcase hidden">
+                    <div class="card card--achievement">
+                        <div class="card__body">
+                            <h3>🎉 Latest Achievement!</h3>
+                            <div class="achievement-content">
+                                <span class="achievement-icon" id="achievement-icon">🏆</span>
+                                <div>
+                                    <h4 id="achievement-name">Achievement Name</h4>
+                                    <p id="achievement-desc">Achievement description</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Run Section -->
+        <section id="add-run" class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h1>Add New Run 📊</h1>
+                    <p>Input your Apple Watch data here</p>
+                </div>
+
+                <div class="form-container">
+                    <form id="add-run-form" class="run-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="run-date">Date</label>
+                                <input type="date" id="run-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-time">Time</label>
+                                <input type="time" id="run-time" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-distance">Distance (miles)</label>
+                                <input type="number" id="run-distance" class="form-control" step="0.1" min="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-duration">Duration (mm:ss)</label>
+                                <input type="text" id="run-duration" class="form-control" placeholder="26:40" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-pace">Average Pace (m:ss)</label>
+                                <input type="text" id="run-pace" class="form-control" placeholder="8:20" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-calories">Calories</label>
+                                <input type="number" id="run-calories" class="form-control" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-elevation">Elevation Gain (ft)</label>
+                                <input type="number" id="run-elevation" class="form-control" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-steps">Steps</label>
+                                <input type="number" id="run-steps" class="form-control" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-power">Running Power (watts)</label>
+                                <input type="number" id="run-power" class="form-control" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="run-cadence">Cadence (spm)</label>
+                                <input type="number" id="run-cadence" class="form-control" min="120" max="220">
+                            </div>
+                        </div>
+
+                        <div class="heart-rate-zones">
+                            <h3>Heart Rate Zones (minutes)</h3>
+                            <div class="zones-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Zone 1</label>
+                                    <input type="number" id="zone1" class="form-control" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Zone 2</label>
+                                    <input type="number" id="zone2" class="form-control" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Zone 3</label>
+                                    <input type="number" id="zone3" class="form-control" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Zone 4</label>
+                                    <input type="number" id="zone4" class="form-control" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Zone 5</label>
+                                    <input type="number" id="zone5" class="form-control" min="0" value="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn--primary btn--lg btn--full-width">
+                            🎯 Add Run
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section id="progress" class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h1>Progress Analytics 📈</h1>
+                    <p>Track your improvements over time</p>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Distance Over Time</h3>
+                            <canvas id="distance-chart" class="chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Pace Progression</h3>
+                            <canvas id="pace-chart" class="chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Heart Rate Zones</h3>
+                            <canvas id="hr-zones-chart" class="chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Personal Records</h3>
+                            <div class="records-list">
+                                <div class="record-item">
+                                    <span class="record-label">🏃‍♂️ Fastest Pace</span>
+                                    <span id="fastest-pace" class="record-value">--:--</span>
+                                </div>
+                                <div class="record-item">
+                                    <span class="record-label">📏 Longest Run</span>
+                                    <span id="longest-run" class="record-value">0.0 mi</span>
+                                </div>
+                                <div class="record-item">
+                                    <span class="record-label">🔥 Most Calories</span>
+                                    <span id="most-calories" class="record-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Goals Section -->
+        <section id="goals" class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h1>Goals & Targets 🎯</h1>
+                    <p>Set and track your running objectives</p>
+                </div>
+
+                <div class="goals-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Weekly Distance Goal</h3>
+                            <div class="goal-setting">
+                                <input type="number" id="weekly-goal" class="form-control" min="1" max="100">
+                                <span>miles per week</span>
+                                <button class="btn btn--secondary btn--sm" onclick="updateGoal('weekly')">Update</button>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div id="weekly-goal-progress" class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span id="weekly-current">0</span> / <span id="weekly-target">25</span> miles
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Monthly Distance Goal</h3>
+                            <div class="goal-setting">
+                                <input type="number" id="monthly-goal" class="form-control" min="1" max="500">
+                                <span>miles per month</span>
+                                <button class="btn btn--secondary btn--sm" onclick="updateGoal('monthly')">Update</button>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div id="monthly-goal-progress" class="progress-fill"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span id="monthly-current">0</span> / <span id="monthly-target">100</span> miles
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Target Pace</h3>
+                            <div class="goal-setting">
+                                <input type="text" id="target-pace" class="form-control" placeholder="7:45">
+                                <span>per mile</span>
+                                <button class="btn btn--secondary btn--sm" onclick="updateGoal('pace')">Update</button>
+                            </div>
+                            <div class="pace-comparison">
+                                <div class="pace-item">
+                                    <span>Current Avg:</span>
+                                    <span id="current-avg-pace">--:--</span>
+                                </div>
+                                <div class="pace-item">
+                                    <span>Target:</span>
+                                    <span id="target-pace-display">7:45</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Next Race Goal</h3>
+                            <div class="race-goal">
+                                <div class="form-group">
+                                    <label class="form-label">Race Type</label>
+                                    <select id="race-type" class="form-control">
+                                        <option value="5K">5K</option>
+                                        <option value="10K" selected>10K</option>
+                                        <option value="Half Marathon">Half Marathon</option>
+                                        <option value="Marathon">Marathon</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Race Date</label>
+                                    <input type="date" id="race-date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Target Time</label>
+                                    <input type="text" id="race-time" class="form-control" placeholder="45:00">
+                                </div>
+                                <button class="btn btn--primary btn--sm" onclick="updateRaceGoal()">Update Race Goal</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements Section -->
+        <section id="achievements" class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h1>Achievements & Badges 🏆</h1>
+                    <p>Celebrate your running milestones</p>
+                </div>
+
+                <div class="achievements-container">
+                    <div class="streak-stats">
+                        <div class="streak-card">
+                            <div class="streak-icon">🔥</div>
+                            <div class="streak-content">
+                                <h3 id="current-streak-display">0</h3>
+                                <p>Current Streak</p>
+                            </div>
+                        </div>
+                        <div class="streak-card">
+                            <div class="streak-icon">📅</div>
+                            <div class="streak-content">
+                                <h3 id="longest-streak-display">0</h3>
+                                <p>Longest Streak</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="badges-grid" id="badges-container">
+                        <!-- Achievement badges will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advice Section -->
+        <section id="advice" class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h1>Running Advice 💡</h1>
+                    <p>Personalized recommendations for your next run</p>
+                </div>
+
+                <div class="advice-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>🎯 Next Run Recommendation</h3>
+                            <div id="next-run-advice" class="advice-content">
+                                <!-- Advice content will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>📊 Training Analysis</h3>
+                            <div id="training-analysis" class="advice-content">
+                                <!-- Training analysis will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>💓 Recovery Insights</h3>
+                            <div id="recovery-advice" class="advice-content">
+                                <!-- Recovery advice will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>🏃‍♂️ Race Predictions</h3>
+                            <div id="race-predictions" class="advice-content">
+                                <!-- Race predictions will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🎉 Run Added Successfully!</h3>
+            </div>
+            <div class="modal-body">
+                <p>Great job! Your run has been logged.</p>
+                <div id="new-achievements" class="new-achievements hidden">
+                    <h4>🏆 New Achievement Unlocked!</h4>
+                    <div id="achievement-display" class="achievement-display"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--primary" onclick="closeModal()">Awesome!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div id="confetti-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
